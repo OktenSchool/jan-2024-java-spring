@@ -1,0 +1,13 @@
+reference-data:
+  categories: Телефони, Планшети, Ноутбуки
+  offices:
+    - name: "Офіс 1"
+      contactNumber: "+33333333333"
+      address:
+        city: "Kyiv"
+        street: "Street 1"
+    - name: "Офіс 2"
+      contactNumber: "+44444444444"
+      address:
+        city: "Lviv"
+        street: "Street 2"

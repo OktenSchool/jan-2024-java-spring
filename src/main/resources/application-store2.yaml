@@ -1,0 +1,13 @@
+reference-data:
+  categories: Товари для дому, Будівельні товари
+  offices:
+    - name: "Будівельний Офіс 1"
+      contactNumber: "+55555555"
+      address:
+        city: "Kyiv"
+        street: "Street 11"
+    - name: "Будівельний Офіс 2"
+      contactNumber: "+66666666"
+      address:
+        city: "Lviv"
+        street: "Street 22"
