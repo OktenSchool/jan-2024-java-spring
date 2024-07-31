@@ -1,0 +1,1 @@
+update products set availability = 'AVAILABLE';
