@@ -51,3 +51,48 @@ databaseChangeLog:
             tableName: "products"
             newColumnName: "availability"
             oldColumnName: "temp_availability"
+  - changeSet:
+      id: "1.0.4"
+      author: "eokten"
+      changes:
+        - addUniqueConstraint:
+            tableName: "products"
+            columnNames: "id"
+        - createSequence:
+            sequenceName: "orders_seq"
+        - createTable:
+            tableName: "orders"
+            columns:
+              - column:
+                  name: "id"
+                  type: "bigint"
+                  constraints:
+                    primary: true
+                    unique: true
+                  defaultValueSequenceNext: "orders_seq"
+              - column:
+                  name: "order_date"
+                  type: "timestamp with time zone"
+        - createTable:
+            tableName: "order_items"
+            columns:
+              - column:
+                  name: "order_id"
+                  type: "bigint"
+                  constraints:
+                    foreignKeyName: "order_items_fk1"
+                    referencedColumnNames: "id"
+                    referencedTableName: "orders"
+              - column:
+                  name: "product_id"
+                  type: "bigint"
+                  constraints:
+                    foreignKeyName: "order_items_fk2"
+                    referencedColumnNames: "id"
+                    referencedTableName: "products"
+              - column:
+                  name: "quantity"
+                  type: "int"
+              - column:
+                  name: "comment"
+                  type: "text"
