@@ -16,6 +16,7 @@ public class ProductMapper {
                 .name(product.getName())
                 .price(BigDecimal.valueOf(product.getPrice()))
                 .availability(product.getAvailability())
+                .owner(product.getOwner())
                 .build();
     }
 
@@ -24,6 +25,7 @@ public class ProductMapper {
         product.setName(dto.getName());
         product.setPrice(dto.getPrice());
         product.setAvailability(product.getAvailability());
+        product.setOwner(dto.getOwner());
         return product;
     }
 }

@@ -2,6 +2,7 @@ package org.okten.demo.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.okten.demo.dto.SendMailDto;
 import org.okten.demo.dto.UpsertProductDto;
 import org.okten.demo.dto.ProductDto;
 import org.okten.demo.entity.Product;
@@ -19,6 +20,8 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     private final ProductMapper productMapper;
+
+    private final MailService mailService;
 
     public Optional<ProductDto> findById(Long id) {
         return productRepository
@@ -58,9 +61,16 @@ public class ProductService {
                 .toList();
     }
 
+    @Transactional
     public ProductDto save(UpsertProductDto productDto) {
         Product product = productMapper.mapToEntity(productDto);
         Product savedProduct = productRepository.save(product);
+        SendMailDto mailDto = SendMailDto.builder()
+                .subject("New product created")
+                .text("Product '%s' was created with price %s".formatted(product.getName(), product.getPrice()))
+                .recipient(product.getOwner())
+                .build();
+        mailService.sendMail(mailDto);
         return productMapper.mapToDto(savedProduct);
     }
 

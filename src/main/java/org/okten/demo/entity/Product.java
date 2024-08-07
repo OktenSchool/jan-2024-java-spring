@@ -32,4 +32,6 @@ public class Product {
 
     @OneToMany(mappedBy = "id.product", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems;
+
+    private String owner;
 }

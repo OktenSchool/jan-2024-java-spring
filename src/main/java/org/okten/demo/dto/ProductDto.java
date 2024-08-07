@@ -21,4 +21,6 @@ public class ProductDto {
     private BigDecimal price;
 
     private ProductAvailability availability;
+
+    private String owner;
 }

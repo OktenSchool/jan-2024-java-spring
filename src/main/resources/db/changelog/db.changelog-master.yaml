@@ -96,3 +96,13 @@ databaseChangeLog:
               - column:
                   name: "comment"
                   type: "text"
+  - changeSet:
+      id: "1.0.5"
+      author: "eokten"
+      changes:
+        - addColumn:
+            tableName: "products"
+            columns:
+              - column:
+                  name: "owner"
+                  type: "varchar(255)"

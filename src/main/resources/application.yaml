@@ -11,3 +11,22 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: none
+  data:
+    mongodb:
+      uri: ${mongodb-uri}
+      database: "product_reviews"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail-sender}
+    password: ${mail-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+mail:
+  sender:
+    username: ${mail-sender}
