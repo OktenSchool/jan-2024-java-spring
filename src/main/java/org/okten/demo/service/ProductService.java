@@ -6,11 +6,17 @@ import org.okten.demo.dto.SendMailDto;
 import org.okten.demo.dto.UpsertProductDto;
 import org.okten.demo.dto.ProductDto;
 import org.okten.demo.entity.Product;
+import org.okten.demo.entity.Role;
+import org.okten.demo.entity.User;
 import org.okten.demo.mapper.ProductMapper;
 import org.okten.demo.repository.ProductRepository;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -64,11 +70,13 @@ public class ProductService {
     @Transactional
     public ProductDto save(UpsertProductDto productDto) {
         Product product = productMapper.mapToEntity(productDto);
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
+        product.setOwner(currentUser);
         Product savedProduct = productRepository.save(product);
         SendMailDto mailDto = SendMailDto.builder()
                 .subject("New product created")
                 .text("Product '%s' was created with price %s".formatted(product.getName(), product.getPrice()))
-                .recipient(product.getOwner())
+                .recipient(product.getOwner().getUsername())
                 .build();
         mailService.sendMail(mailDto);
         return productMapper.mapToDto(savedProduct);
@@ -78,6 +86,11 @@ public class ProductService {
     public Optional<ProductDto> update(Long productId, UpsertProductDto productUpdateWith) {
         return productRepository
                 .findById(productId)
+                .filter(product -> {
+                    String productOwner = product.getOwner().getUsername();
+                    String currentUserName = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+                    return Objects.equals(productOwner, currentUserName);
+                })
                 .map(product -> update(product, productUpdateWith))
                 .map(productMapper::mapToDto);
     }

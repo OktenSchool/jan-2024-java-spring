@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class SendProductStats {

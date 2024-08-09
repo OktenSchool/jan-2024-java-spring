@@ -17,7 +17,5 @@ public class UpsertProductDto {
     @DecimalMax("1900")
     private double price;
 
-    private String owner;
-
     private ProductAvailability availability;
 }

@@ -106,3 +106,34 @@ databaseChangeLog:
               - column:
                   name: "owner"
                   type: "varchar(255)"
+  - changeSet:
+      id: "1.0.6"
+      author: "eokten"
+      changes:
+        - modifyDataType:
+            tableName: "products"
+            columnName: "owner"
+            newDataType: "bigint"
+        - createSequence:
+            sequenceName: "users_seq"
+        - createTable:
+            tableName: "users"
+            columns:
+              - column:
+                  name: "id"
+                  type: "bigint"
+                  constraints:
+                    primary: true
+                  defaultValueSequenceNext: "users_seq"
+              - column:
+                  name: "username"
+                  type: "text"
+              - column:
+                  name: "password"
+                  type: "text"
+              - column:
+                  name: "role"
+                  type: "text"
+              - column:
+                  name: "registered_at"
+                  type: "timestamp with time zone"

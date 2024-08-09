@@ -30,3 +30,10 @@ spring:
 mail:
   sender:
     username: ${mail-sender}
+
+jwt:
+  secret: JS9oPzbAxpVkyD8X70JlK3KTnipV9M92 # 62^32
+  access-token:
+    ttl-millis: 3600000
+  refresh-token:
+    ttl-millis: 360000000
