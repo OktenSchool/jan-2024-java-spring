@@ -56,6 +56,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.save(product));
     }
 
+    @Secured(Role.SELLER)
     @PutMapping("/products/{productId}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable Long productId, @Valid @RequestBody UpsertProductDto productUpdateWith) {
         return ResponseEntity.of(productService.update(productId, productUpdateWith));

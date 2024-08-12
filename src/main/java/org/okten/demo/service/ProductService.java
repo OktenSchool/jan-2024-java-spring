@@ -10,6 +10,7 @@ import org.okten.demo.entity.Role;
 import org.okten.demo.entity.User;
 import org.okten.demo.mapper.ProductMapper;
 import org.okten.demo.repository.ProductRepository;
+import org.okten.demo.repository.UserRepository;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,8 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     private final MailService mailService;
+
+    private final UserRepository userRepository;
 
     public Optional<ProductDto> findById(Long id) {
         return productRepository
@@ -70,8 +73,8 @@ public class ProductService {
     @Transactional
     public ProductDto save(UpsertProductDto productDto) {
         Product product = productMapper.mapToEntity(productDto);
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getDetails();
-        product.setOwner(currentUser);
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        product.setOwner(userRepository.findByUsername(username).orElseThrow());
         Product savedProduct = productRepository.save(product);
         SendMailDto mailDto = SendMailDto.builder()
                 .subject("New product created")

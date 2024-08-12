@@ -25,6 +25,7 @@ public class MailService {
         mailMessage.setSubject(mailDto.getSubject());
         mailMessage.setText(mailDto.getText());
 
-        mailSender.send(mailMessage);
+//        mailSender.send(mailMessage);
+        System.out.printf("Mail to: '%s', with text: '%s'%n", mailDto.getRecipient(), mailDto.getText());
     }
 }

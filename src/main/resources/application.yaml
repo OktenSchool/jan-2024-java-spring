@@ -37,3 +37,9 @@ jwt:
     ttl-millis: 3600000
   refresh-token:
     ttl-millis: 360000000
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: DEBUG
