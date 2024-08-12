@@ -26,17 +26,15 @@ spring:
           auth: true
           starttls:
             enable: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-d8rm3bg4cwywnjin.eu.auth0.com/
 
 mail:
   sender:
     username: ${mail-sender}
-
-jwt:
-  secret: JS9oPzbAxpVkyD8X70JlK3KTnipV9M92 # 62^32
-  access-token:
-    ttl-millis: 3600000
-  refresh-token:
-    ttl-millis: 360000000
 
 #logging:
 #  level:

@@ -139,3 +139,15 @@ databaseChangeLog:
               - column:
                   name: "registered_at"
                   type: "timestamp with time zone"
+  - changeSet:
+      id: "1.0.7"
+      author: "eokten"
+      changes:
+        - modifyDataType:
+            tableName: "products"
+            columnName: "owner"
+            newDataType: "text"
+        - dropSequence:
+            sequenceName: "users_seq"
+        - dropTable:
+            tableName: "users"

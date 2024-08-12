@@ -6,14 +6,10 @@ import org.okten.demo.dto.SendMailDto;
 import org.okten.demo.dto.UpsertProductDto;
 import org.okten.demo.dto.ProductDto;
 import org.okten.demo.entity.Product;
-import org.okten.demo.entity.Role;
-import org.okten.demo.entity.User;
 import org.okten.demo.mapper.ProductMapper;
 import org.okten.demo.repository.ProductRepository;
-import org.okten.demo.repository.UserRepository;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,8 +25,6 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     private final MailService mailService;
-
-    private final UserRepository userRepository;
 
     public Optional<ProductDto> findById(Long id) {
         return productRepository
@@ -73,13 +67,11 @@ public class ProductService {
     @Transactional
     public ProductDto save(UpsertProductDto productDto) {
         Product product = productMapper.mapToEntity(productDto);
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        product.setOwner(userRepository.findByUsername(username).orElseThrow());
         Product savedProduct = productRepository.save(product);
         SendMailDto mailDto = SendMailDto.builder()
                 .subject("New product created")
                 .text("Product '%s' was created with price %s".formatted(product.getName(), product.getPrice()))
-                .recipient(product.getOwner().getUsername())
+                .recipient(product.getOwner())
                 .build();
         mailService.sendMail(mailDto);
         return productMapper.mapToDto(savedProduct);
@@ -89,11 +81,6 @@ public class ProductService {
     public Optional<ProductDto> update(Long productId, UpsertProductDto productUpdateWith) {
         return productRepository
                 .findById(productId)
-                .filter(product -> {
-                    String productOwner = product.getOwner().getUsername();
-                    String currentUserName = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-                    return Objects.equals(productOwner, currentUserName);
-                })
                 .map(product -> update(product, productUpdateWith))
                 .map(productMapper::mapToDto);
     }

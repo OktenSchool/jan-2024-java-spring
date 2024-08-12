@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.okten.demo.dto.ReviewDto;
 import org.okten.demo.dto.UpsertProductDto;
 import org.okten.demo.dto.ProductDto;
-import org.okten.demo.entity.Role;
 import org.okten.demo.service.ProductService;
 import org.okten.demo.service.ReviewService;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +49,11 @@ public class ProductController {
         }
     }
 
-    @Secured(Role.SELLER)
     @PostMapping("/products")
     public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody UpsertProductDto product) {
         return ResponseEntity.ok(productService.save(product));
     }
 
-    @Secured(Role.SELLER)
     @PutMapping("/products/{productId}")
     public ResponseEntity<ProductDto> updateProduct(@PathVariable Long productId, @Valid @RequestBody UpsertProductDto productUpdateWith) {
         return ResponseEntity.of(productService.update(productId, productUpdateWith));

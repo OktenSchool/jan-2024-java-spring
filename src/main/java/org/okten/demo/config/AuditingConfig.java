@@ -6,6 +6,7 @@ import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -21,6 +22,6 @@ public class AuditingConfig {
 
     @Bean
     public AuditorAware<String> auditorAware() {
-        return () -> Optional.of(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        return () -> Optional.of(((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getClaim("email"));
     }
 }
