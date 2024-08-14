@@ -1,30 +1,21 @@
 package org.okten.demo.mapper;
 
-import org.okten.demo.dto.ProductDto;
-import org.okten.demo.dto.UpsertProductDto;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.okten.demo.api.dto.ProductDto;
 import org.okten.demo.entity.Product;
-import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
+@Mapper
+public interface ProductMapper {
 
-@Component
-public class ProductMapper {
+    ProductDto mapToDto(Product product);
 
-    public ProductDto mapToDto(Product product) {
-        return ProductDto.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .price(BigDecimal.valueOf(product.getPrice()))
-                .availability(product.getAvailability())
-                .owner(product.getOwner())
-                .build();
-    }
+    Product mapToProduct(ProductDto dto);
 
-    public Product mapToEntity(UpsertProductDto dto) {
-        Product product = new Product();
-        product.setName(dto.getName());
-        product.setPrice(dto.getPrice());
-        product.setAvailability(product.getAvailability());
-        return product;
-    }
+    Product update(@MappingTarget Product product, ProductDto productDto);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Product updatePartially(@MappingTarget Product product, ProductDto productDto);
 }

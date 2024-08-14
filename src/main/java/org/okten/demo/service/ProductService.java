@@ -2,18 +2,14 @@ package org.okten.demo.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.okten.demo.api.dto.ProductDto;
 import org.okten.demo.dto.SendMailDto;
-import org.okten.demo.dto.UpsertProductDto;
-import org.okten.demo.dto.ProductDto;
 import org.okten.demo.entity.Product;
 import org.okten.demo.mapper.ProductMapper;
 import org.okten.demo.repository.ProductRepository;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -65,8 +61,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDto save(UpsertProductDto productDto) {
-        Product product = productMapper.mapToEntity(productDto);
+    public ProductDto save(ProductDto productDto) {
+        Product product = productMapper.mapToProduct(productDto);
         Product savedProduct = productRepository.save(product);
         SendMailDto mailDto = SendMailDto.builder()
                 .subject("New product created")
@@ -78,17 +74,22 @@ public class ProductService {
     }
 
     @Transactional
-    public Optional<ProductDto> update(Long productId, UpsertProductDto productUpdateWith) {
+    public Optional<ProductDto> update(Long productId, ProductDto productUpdateWith) {
         return productRepository
                 .findById(productId)
-                .map(product -> update(product, productUpdateWith))
+                .map(product -> productMapper.update(product, productUpdateWith))
                 .map(productMapper::mapToDto);
     }
 
-    private Product update(Product product, UpsertProductDto dto) {
-        product.setName(dto.getName());
-        product.setPrice(dto.getPrice());
-        product.setAvailability(dto.getAvailability());
-        return product;
+    @Transactional
+    public Optional<ProductDto> updatePartially(Long productId, ProductDto productUpdateWith) {
+        return productRepository
+                .findById(productId)
+                .map(product -> productMapper.updatePartially(product, productUpdateWith))
+                .map(productMapper::mapToDto);
+    }
+
+    public void delete(Long productId) {
+        productRepository.deleteById(productId);
     }
 }

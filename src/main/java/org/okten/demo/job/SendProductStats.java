@@ -2,13 +2,11 @@ package org.okten.demo.job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.okten.demo.dto.ReviewDto;
 import org.okten.demo.dto.SendMailDto;
 import org.okten.demo.service.MailService;
 import org.okten.demo.service.ProductService;
 import org.okten.demo.service.ReviewService;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,26 +28,26 @@ public class SendProductStats {
     public void run() {
         log.info("Sending product stats...");
 
-        productService
-                .findAllProducts()
-                .stream()
-                .collect(toMap(
-                        identity(),
-                        productDto ->
-                                reviewService.getReviews(productDto.getId())
-                                        .stream()
-                                        .mapToInt(ReviewDto::getRating)
-                                        .average()
-                                        .orElse(-1)))
-                .forEach((productDto, averageRating) -> {
-                    if (averageRating != -1) {
-                        mailService.sendMail(SendMailDto.builder()
-                                .recipient(productDto.getOwner())
-                                .subject("Product '%s' average rating update".formatted(productDto.getName()))
-                                .text("Current rating is: %s".formatted(averageRating))
-                                .build());
-                    }
-                });
+//        productService
+//                .findAllProducts()
+//                .stream()
+//                .collect(toMap(
+//                        identity(),
+//                        productDto ->
+//                                reviewService.getReviews(productDto.getId())
+//                                        .stream()
+//                                        .mapToInt(ReviewDto::getRating)
+//                                        .average()
+//                                        .orElse(-1)))
+//                .forEach((productDto, averageRating) -> {
+//                    if (averageRating != -1) {
+//                        mailService.sendMail(SendMailDto.builder()
+//                                .recipient(productDto.getOwner())
+//                                .subject("Product '%s' average rating update".formatted(productDto.getName()))
+//                                .text("Current rating is: %s".formatted(averageRating))
+//                                .build());
+//                    }
+//                });
     }
 
     // fixedDelay = 1 hour
