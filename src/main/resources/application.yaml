@@ -4,7 +4,7 @@ spring:
   profiles:
     active: store1
   datasource:
-    url: "jdbc:postgresql://localhost:5432/XXX"
+    url: "jdbc:postgresql://localhost:5432/products"
     username: "postgres"
     password: "postgres"
   jpa:
