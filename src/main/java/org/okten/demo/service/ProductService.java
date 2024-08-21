@@ -3,10 +3,13 @@ package org.okten.demo.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.okten.demo.api.dto.ProductDto;
+import org.okten.demo.dto.ProductAvailabilityUpdatedEvent;
 import org.okten.demo.dto.SendMailDto;
 import org.okten.demo.entity.Product;
+import org.okten.demo.entity.ProductAvailability;
 import org.okten.demo.mapper.ProductMapper;
 import org.okten.demo.repository.ProductRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +24,8 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     private final MailService mailService;
+
+    private final ProductEventProducer productEventProducer;
 
     public Optional<ProductDto> findById(Long id) {
         return productRepository
@@ -77,7 +82,10 @@ public class ProductService {
     public Optional<ProductDto> update(Long productId, ProductDto productUpdateWith) {
         return productRepository
                 .findById(productId)
-                .map(product -> productMapper.update(product, productUpdateWith))
+                .map(product -> {
+                    sendAvailabilityUpdatedEvent(product, productUpdateWith);
+                    return productMapper.update(product, productUpdateWith);
+                })
                 .map(productMapper::mapToDto);
     }
 
@@ -85,8 +93,21 @@ public class ProductService {
     public Optional<ProductDto> updatePartially(Long productId, ProductDto productUpdateWith) {
         return productRepository
                 .findById(productId)
-                .map(product -> productMapper.updatePartially(product, productUpdateWith))
+                .map(product -> {
+                    sendAvailabilityUpdatedEvent(product, productUpdateWith);
+                    return productMapper.updatePartially(product, productUpdateWith);
+                })
                 .map(productMapper::mapToDto);
+    }
+
+    private void sendAvailabilityUpdatedEvent(Product product, ProductDto productUpdateWith) {
+        ProductAvailability newAvailabilityStatus = productMapper.availabilityEnumToProductAvailability(productUpdateWith.getAvailability());
+        if (product.getAvailability() != newAvailabilityStatus) {
+            productEventProducer.publishProductAvailabilityUpdatedEvent(ProductAvailabilityUpdatedEvent.builder()
+                    .productId(product.getId())
+                    .availability(newAvailabilityStatus)
+                    .build());
+        }
     }
 
     public void delete(Long productId) {

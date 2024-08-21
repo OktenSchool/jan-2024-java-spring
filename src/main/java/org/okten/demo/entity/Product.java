@@ -36,9 +36,6 @@ public class Product {
     @Enumerated(EnumType.ORDINAL)
     private ProductAvailability availability;
 
-    @OneToMany(mappedBy = "id.product", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItems;
-
     @CreatedBy
     private String owner;
 }

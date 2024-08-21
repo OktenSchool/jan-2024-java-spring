@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.okten.demo.api.dto.ProductDto;
 import org.okten.demo.entity.Product;
+import org.okten.demo.entity.ProductAvailability;
 
 @Mapper
 public interface ProductMapper {
@@ -18,4 +19,8 @@ public interface ProductMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Product updatePartially(@MappingTarget Product product, ProductDto productDto);
+
+    ProductDto.AvailabilityEnum productAvailabilityToAvailabilityEnum(ProductAvailability productAvailability);
+
+    ProductAvailability availabilityEnumToProductAvailability(ProductDto.AvailabilityEnum availabilityEnum);
 }

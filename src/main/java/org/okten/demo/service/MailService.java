@@ -13,7 +13,7 @@ public class MailService {
 
     private final MailSender mailSender;
 
-    @Value("${mail.sender.username}")
+//    @Value("${mail.sender.username}")
     private String mailSenderUsername;
 
     public void sendMail(SendMailDto mailDto) {
