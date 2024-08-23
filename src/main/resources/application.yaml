@@ -31,12 +31,21 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://dev-d8rm3bg4cwywnjin.eu.auth0.com/
-  kafka:
-    producer:
-      topic: product-availability-updated-events
-      bootstrap-servers: localhost:9092
-      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: localhost
+          defaultBrokerPort: 9092
+          producer-properties:
+            key:
+              serializer: org.apache.kafka.common.serialization.IntegerSerializer
+            value:
+              serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      bindings:
+        product-availability-updated-out-0:
+          destination: product-events
+          content-type: application/json
 
 mail:
   sender:

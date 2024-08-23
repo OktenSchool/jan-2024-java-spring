@@ -1,8 +1,8 @@
 package org.okten.demo.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.okten.demo.api.controller.ProductsApi;
-import org.okten.demo.api.dto.ProductDto;
+import org.okten.demo.api.rest.controller.ProductsApi;
+import org.okten.demo.api.rest.dto.ProductDto;
 import org.okten.demo.service.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;

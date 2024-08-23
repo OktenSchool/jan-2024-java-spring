@@ -2,14 +2,15 @@ package org.okten.demo.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.okten.demo.api.dto.ProductDto;
+import org.okten.demo.api.event.dto.ProductAvailabilityUpdatedPayload;
+import org.okten.demo.api.event.producer.IProductEventsProducer;
+import org.okten.demo.api.rest.dto.ProductDto;
 import org.okten.demo.dto.ProductAvailabilityUpdatedEvent;
 import org.okten.demo.dto.SendMailDto;
 import org.okten.demo.entity.Product;
 import org.okten.demo.entity.ProductAvailability;
 import org.okten.demo.mapper.ProductMapper;
 import org.okten.demo.repository.ProductRepository;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class ProductService {
 
     private final MailService mailService;
 
-    private final ProductEventProducer productEventProducer;
+    private final IProductEventsProducer productEventsProducer;
 
     public Optional<ProductDto> findById(Long id) {
         return productRepository
@@ -103,10 +104,9 @@ public class ProductService {
     private void sendAvailabilityUpdatedEvent(Product product, ProductDto productUpdateWith) {
         ProductAvailability newAvailabilityStatus = productMapper.availabilityEnumToProductAvailability(productUpdateWith.getAvailability());
         if (product.getAvailability() != newAvailabilityStatus) {
-            productEventProducer.publishProductAvailabilityUpdatedEvent(ProductAvailabilityUpdatedEvent.builder()
-                    .productId(product.getId())
-                    .availability(newAvailabilityStatus)
-                    .build());
+            productEventsProducer.productAvailabilityUpdated(new ProductAvailabilityUpdatedPayload()
+                    .withProductId(product.getId().intValue())
+                    .withAvailability(productMapper.productAvailabilityToEventAvailabilityEnum(product.getAvailability())));
         }
     }
 

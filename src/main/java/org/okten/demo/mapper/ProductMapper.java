@@ -4,7 +4,8 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.okten.demo.api.dto.ProductDto;
+import org.okten.demo.api.event.dto.ProductAvailabilityUpdatedPayload;
+import org.okten.demo.api.rest.dto.ProductDto;
 import org.okten.demo.entity.Product;
 import org.okten.demo.entity.ProductAvailability;
 
@@ -23,4 +24,8 @@ public interface ProductMapper {
     ProductDto.AvailabilityEnum productAvailabilityToAvailabilityEnum(ProductAvailability productAvailability);
 
     ProductAvailability availabilityEnumToProductAvailability(ProductDto.AvailabilityEnum availabilityEnum);
+
+    ProductAvailabilityUpdatedPayload.Availability productAvailabilityToEventAvailabilityEnum(ProductAvailability productAvailability);
+
+    ProductAvailability eventAvailabilityEnumToProductAvailability(ProductAvailabilityUpdatedPayload.Availability availabilityEnum);
 }

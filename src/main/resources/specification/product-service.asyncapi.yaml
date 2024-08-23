@@ -1,0 +1,74 @@
+asyncapi: 3.0.0
+info:
+  title: Product Service Event API
+  version: 1.0.0
+  description: |-
+    The API allows to interact with product events
+
+defaultContentType: application/json
+
+servers:
+  dev:
+    host: localhost:9092
+    protocol: kafka
+    description: Development Kafka broker
+
+channels:
+  productEvents:
+    address: product-events
+    messages:
+      ProductAvailabilityUpdated:
+        $ref: '#/components/messages/ProductAvailabilityUpdated'
+    description: The topic on which product availability updated events may be produced and consumed.
+operations:
+  productAvailabilityUpdated:
+    action: send
+    tags:
+      - name: Product
+    channel:
+      $ref: '#/channels/productEvents'
+    summary: Produce product created event
+    traits:
+      - $ref: '#/components/operationTraits/kafka'
+    messages:
+      - $ref: '#/channels/productEvents/messages/ProductAvailabilityUpdated'
+components:
+  messages:
+    ProductAvailabilityUpdated:
+      name: productAvailabilityUpdated
+      title: Product availability updated message
+      summary: Contains data about product's availability update
+      contentType: application/json
+      traits:
+        - $ref: '#/components/messageTraits/commonHeaders'
+      payload:
+        $ref: '#/components/schemas/ProductAvailabilityUpdatedPayload'
+  schemas:
+    ProductAvailabilityUpdatedPayload:
+      type: object
+      properties:
+        productId:
+          type: integer
+          format: int64
+          description: Product id
+        availability:
+          type: string
+          enum: [ AVAILABLE, OUT_OF_STOCK, DISCONTINUED, NOT_AVAILABLE ]
+          description: New availability value
+  messageTraits:
+    commonHeaders:
+      headers:
+        type: object
+        properties:
+          dummy-header:
+            type: integer
+            minimum: 0
+            maximum: 100
+  operationTraits:
+    kafka:
+      bindings:
+        kafka:
+          clientId:
+            type: string
+            enum:
+              - dummy-id
