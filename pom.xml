@@ -27,11 +27,16 @@
         <swagger-annotations.version>2.2.20</swagger-annotations.version>
 
         <openapi-generator.version>7.2.0</openapi-generator.version>
-
         <product-service-openapi-spec.path>
             ${project.basedir}/src/main/resources/specification/product-service.openapi.yaml
         </product-service-openapi-spec.path>
-        <api-package>org.okten.demo.api</api-package>
+        <rest-api-package>org.okten.demo.api.rest</rest-api-package>
+
+        <zenwave.version>1.4.1</zenwave.version>
+        <product-service-asyncapi-spec.path>
+            ${project.basedir}/src/main/resources/specification/product-service.asyncapi.yaml
+        </product-service-asyncapi-spec.path>
+        <event-api-package>org.okten.demo.api.event</event-api-package>
     </properties>
 
     <dependencies>
@@ -87,11 +92,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
@@ -101,6 +101,12 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+            <version>4.1.3</version>
         </dependency>
 
         <dependency>
@@ -114,11 +120,11 @@
             <version>${swagger-annotations.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.0.3</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springdoc</groupId>-->
+<!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+<!--            <version>2.0.3</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -223,8 +229,8 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <useBeanValidation>true</useBeanValidation>
                                 <performBeanValidation>true</performBeanValidation>
-                                <modelPackage>${api-package}.dto</modelPackage>
-                                <apiPackage>${api-package}.controller</apiPackage>
+                                <modelPackage>${rest-api-package}.dto</modelPackage>
+                                <apiPackage>${rest-api-package}.controller</apiPackage>
                                 <useJakartaEe>true</useJakartaEe> <!-- important for Spring Boot 3.x -->
                                 <useSpringBoot3>true</useSpringBoot3> <!-- important for Spring Boot 3.x -->
                                 <sourceFolder>/src/main/java</sourceFolder>
@@ -234,6 +240,64 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>io.github.zenwave360.zenwave-sdk</groupId>
+                <artifactId>zenwave-sdk-maven-plugin</artifactId>
+                <version>${zenwave.version}</version>
+                <configuration>
+                    <addCompileSourceRoot>true</addCompileSourceRoot>
+                    <addTestCompileSourceRoot>true</addTestCompileSourceRoot>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-asyncapi-dtos</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatorName>jsonschema2pojo</generatorName>
+                            <inputSpec>${product-service-asyncapi-spec.path}</inputSpec>
+                            <configOptions>
+                                <modelPackage>${event-api-package}.dto</modelPackage>
+                                <jsonschema2pojo.useJakartaValidation>true</jsonschema2pojo.useJakartaValidation>
+                                <jsonschema2pojo.includeJsr303Annotations>false</jsonschema2pojo.includeJsr303Annotations>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-asyncapi-producer</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatorName>spring-cloud-streams3</generatorName>
+                            <inputSpec>${product-service-asyncapi-spec.path}</inputSpec>
+                            <configOptions>
+                                <operationIds>productAvailabilityUpdated</operationIds>
+                                <role>provider</role>
+                                <style>imperative</style>
+                                <apiPackage>${event-api-package}.producer</apiPackage>
+                                <modelPackage>${event-api-package}.dto</modelPackage>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>io.github.zenwave360.zenwave-sdk.plugins</groupId>
+                        <artifactId>asyncapi-spring-cloud-streams3</artifactId>
+                        <version>${zenwave.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.github.zenwave360.zenwave-sdk.plugins</groupId>
+                        <artifactId>asyncapi-jsonschema2pojo</artifactId>
+                        <version>${zenwave.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
