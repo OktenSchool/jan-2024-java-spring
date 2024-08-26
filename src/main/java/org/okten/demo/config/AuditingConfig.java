@@ -22,6 +22,12 @@ public class AuditingConfig {
 
     @Bean
     public AuditorAware<String> auditorAware() {
-        return () -> Optional.of(((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getClaim("sub"));
+        return () -> {
+            try {
+                return Optional.of(((Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getClaim("sub"));
+            } catch (Exception e) {
+                return Optional.empty();
+            }
+        };
     }
 }
